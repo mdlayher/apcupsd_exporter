@@ -22,3 +22,11 @@ Usage of ./apcupsd_exporter:
   -telemetry.path string
         URL path for surfacing collected metrics (default "/metrics")
 ```
+
+Sample
+------
+
+Here is a screenshot of an example grafana dashboard using metrics from
+`apcupsd_exporter`.
+
+![sample](https://cloud.githubusercontent.com/assets/1926905/18330011/55c49eca-7524-11e6-8152-717bf4bc75c0.png)
