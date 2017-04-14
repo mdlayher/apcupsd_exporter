@@ -45,6 +45,7 @@ func TestUPSCollector(t *testing.T) {
 					XOnBattery:              time.Unix(100001, 0),
 					XOffBattery:             time.Unix(100002, 0),
 					LastSelftest:            time.Unix(100003, 0),
+					NominalPower:            50.0,
 				},
 			},
 			matches: []*regexp.Regexp{
@@ -61,6 +62,7 @@ func TestUPSCollector(t *testing.T) {
 				regexp.MustCompile(`apcupsd_last_transfer_on_battery{hostname="a",model="b",ups_name="c"} 100001`),
 				regexp.MustCompile(`apcupsd_last_transfer_off_battery{hostname="a",model="b",ups_name="c"} 100002`),
 				regexp.MustCompile(`apcupsd_last_selftest{hostname="a",model="b",ups_name="c"} 100003`),
+				regexp.MustCompile(`apcupsd_nominal_power_watts{hostname="a",model="b",ups_name="c"} 50`),
 			},
 		},
 	}

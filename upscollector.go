@@ -31,6 +31,7 @@ type UPSCollector struct {
 	LastTransferOnBattery               *prometheus.Desc
 	LastTransferOffBattery              *prometheus.Desc
 	LastSelftest                        *prometheus.Desc
+	NominalPowerWatts                   *prometheus.Desc
 
 	ss StatusSource
 }
@@ -131,6 +132,13 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 		LastSelftest: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_selftest"),
 			"Time of last selftest since apcupsd startup",
+			labels,
+			nil,
+		),
+
+		NominalPowerWatts: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "apcupsd_nominal_power_watts"),
+			"Nominal power output in watts",
 			labels,
 			nil,
 		),
@@ -242,6 +250,13 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		c.LastSelftest,
 		s.LastSelftest,
 		labels...
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		c.NominalPowerWatts,
+		prometheus.GaugeValue,
+		float64(s.NominalPower),
+		labels...,
 	)
 
 	return nil, nil
