@@ -2,6 +2,7 @@ package apcupsdexporter
 
 import (
 	"log"
+	"time"
 
 	"github.com/mdlayher/apcupsd"
 	"github.com/prometheus/client_golang/prometheus"
@@ -27,6 +28,10 @@ type UPSCollector struct {
 	BatteryTimeLeftSeconds              *prometheus.Desc
 	BatteryTimeOnSeconds                *prometheus.Desc
 	BatteryCumulativeTimeOnSecondsTotal *prometheus.Desc
+	LastTransferOnBattery               *prometheus.Desc
+	LastTransferOffBattery              *prometheus.Desc
+	LastSelftest                        *prometheus.Desc
+	NominalPowerWatts                   *prometheus.Desc
 
 	ss StatusSource
 }
@@ -106,6 +111,34 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 		BatteryCumulativeTimeOnSecondsTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_cumulative_time_on_seconds_total"),
 			"Total number of seconds the UPS has provided battery power due to AC input line outages.",
+			labels,
+			nil,
+		),
+
+		LastTransferOnBattery: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_on_battery"),
+			"Time of last transfer to battery since apcupsd startup.",
+			labels,
+			nil,
+		),
+
+		LastTransferOffBattery: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_off_battery"),
+			"Time of last transfer from battery since apcupsd startup.",
+			labels,
+			nil,
+		),
+
+		LastSelftest: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "apcupsd_last_selftest"),
+			"Time of last selftest since apcupsd startup.",
+			labels,
+			nil,
+		),
+
+		NominalPowerWatts: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "apcupsd_nominal_power_watts"),
+			"Nominal power output in watts.",
 			labels,
 			nil,
 		),
@@ -198,7 +231,51 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		labels...,
 	)
 
+	collectTimestamp(
+		ch,
+		c.LastTransferOnBattery,
+		s.XOnBattery,
+		labels...,
+	)
+
+	collectTimestamp(
+		ch,
+		c.LastTransferOffBattery,
+		s.XOffBattery,
+		labels...,
+	)
+
+	collectTimestamp(
+		ch,
+		c.LastSelftest,
+		s.LastSelftest,
+		labels...,
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		c.NominalPowerWatts,
+		prometheus.GaugeValue,
+		float64(s.NominalPower),
+		labels...,
+	)
+
 	return nil, nil
+}
+
+// collectTimestamp collects timestamp metrics.
+// Timestamps that are zero (time.IsZero() == true) are ignored, as such a timestamp indicates
+// 'information not available', which is best expressed in Prometheus by not having the metric at all.
+func collectTimestamp(ch chan<- prometheus.Metric, desc *prometheus.Desc, time time.Time, labelValues ...string) {
+	if time.IsZero() {
+		return
+	}
+
+	ch <- prometheus.MustNewConstMetric(
+		desc,
+		prometheus.GaugeValue,
+		float64(time.Unix()),
+		labelValues...,
+	)
 }
 
 // Describe sends the descriptors of each metric over to the provided channel.
