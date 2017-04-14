@@ -2,10 +2,10 @@ package apcupsdexporter
 
 import (
 	"log"
+	"time"
 
 	"github.com/mdlayher/apcupsd"
 	"github.com/prometheus/client_golang/prometheus"
-	"time"
 )
 
 var _ StatusSource = &apcupsd.Client{}
@@ -117,28 +117,28 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 
 		LastTransferOnBattery: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_on_battery"),
-			"Time of last transfer to battery since apcupsd startup",
+			"Time of last transfer to battery since apcupsd startup.",
 			labels,
 			nil,
 		),
 
 		LastTransferOffBattery: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_off_battery"),
-			"Time of last transfer from battery since apcupsd startup",
+			"Time of last transfer from battery since apcupsd startup.",
 			labels,
 			nil,
 		),
 
 		LastSelftest: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_selftest"),
-			"Time of last selftest since apcupsd startup",
+			"Time of last selftest since apcupsd startup.",
 			labels,
 			nil,
 		),
 
 		NominalPowerWatts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_nominal_power_watts"),
-			"Nominal power output in watts",
+			"Nominal power output in watts.",
 			labels,
 			nil,
 		),
@@ -235,21 +235,21 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		ch,
 		c.LastTransferOnBattery,
 		s.XOnBattery,
-		labels...
+		labels...,
 	)
 
 	collectTimestamp(
 		ch,
 		c.LastTransferOffBattery,
 		s.XOffBattery,
-		labels...
+		labels...,
 	)
 
 	collectTimestamp(
 		ch,
 		c.LastSelftest,
 		s.LastSelftest,
-		labels...
+		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
@@ -274,7 +274,7 @@ func collectTimestamp(ch chan<- prometheus.Metric, desc *prometheus.Desc, time t
 		desc,
 		prometheus.GaugeValue,
 		float64(time.Unix()),
-		labelValues...
+		labelValues...,
 	)
 }
 
