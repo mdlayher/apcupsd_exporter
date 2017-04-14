@@ -42,6 +42,9 @@ func TestUPSCollector(t *testing.T) {
 					LineVoltage:             121.1,
 					LoadPercent:             16.0,
 					NumberTransfers:         1,
+					XOnBattery:              time.Unix(100001, 0),
+					XOffBattery:             time.Unix(100002, 0),
+					LastSelftest:            time.Unix(100003, 0),
 				},
 			},
 			matches: []*regexp.Regexp{
@@ -55,6 +58,9 @@ func TestUPSCollector(t *testing.T) {
 				regexp.MustCompile(`apcupsd_line_nominal_volts{hostname="a",model="b",ups_name="c"} 120`),
 				regexp.MustCompile(`apcupsd_line_volts{hostname="a",model="b",ups_name="c"} 121.1`),
 				regexp.MustCompile(`apcupsd_ups_load_percent{hostname="a",model="b",ups_name="c"} 16`),
+				regexp.MustCompile(`apcupsd_last_transfer_on_battery{hostname="a",model="b",ups_name="c"} 100001`),
+				regexp.MustCompile(`apcupsd_last_transfer_off_battery{hostname="a",model="b",ups_name="c"} 100002`),
+				regexp.MustCompile(`apcupsd_last_selftest{hostname="a",model="b",ups_name="c"} 100003`),
 			},
 		},
 	}
@@ -68,11 +74,31 @@ func TestUPSCollector(t *testing.T) {
 
 				t.Run(name, func(t *testing.T) {
 					if !m.Match(out) {
-						t.Fatal("\toutput failed to match regex")
+						t.Fatalf("\toutput failed to match regex (regexp: %v)", m)
 					}
 				})
 			}
 		})
+	}
+}
+
+// TestZeroTimesAreIgnored tests that times with a zero value (time.IsZero() == true)
+// are not collected.
+func TestZeroTimesAreIgnored(t *testing.T) {
+	ss := &testStatusSource{
+		s: &apcupsd.Status{
+			XOnBattery:  time.Unix(123456, 0),
+			XOffBattery: time.Time{},
+		},
+	}
+	out := testCollector(t, NewUPSCollector(ss))
+	// Test that in general timestamps are collected.
+	if !regexp.MustCompile(`apcupsd_last_transfer_on_battery.* 123456`).Match(out) {
+		t.Error("non-zero timestamp is not reported properly")
+	}
+	// Test that zero timestamps, however, are ignored.
+	if regexp.MustCompile(`apcupsd_last_transfer_off_battery`).Match(out) {
+		t.Error("Zero time is reported")
 	}
 }
 
