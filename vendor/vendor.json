@@ -1,0 +1,85 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "0rido7hYHQtfq3UJzVT5LClLAWc=",
+			"path": "github.com/beorn7/perks/quantile",
+			"revision": "3a771d992973f24aa725d07868b467d1ddfceafb",
+			"revisionTime": "2018-03-21T16:47:47Z"
+		},
+		{
+			"checksumSHA1": "WX1+2gktHcBmE9MGwFSGs7oqexU=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b",
+			"revisionTime": "2018-03-28T16:31:53Z"
+		},
+		{
+			"checksumSHA1": "bKMZjd2wPw13VwoE7mBeSv5djFA=",
+			"path": "github.com/matttproud/golang_protobuf_extensions/pbutil",
+			"revision": "c12348ce28de40eed0136aa2b644d0ee0650e56c",
+			"revisionTime": "2016-04-24T11:30:07Z"
+		},
+		{
+			"checksumSHA1": "K+CE2YCeNxenmsZ8gf0sqsE6mqw=",
+			"path": "github.com/mdlayher/apcupsd",
+			"revision": "2fe55d9e1d0704d3c6f03f69a1fd9ebe2aef9df1",
+			"revisionTime": "2018-02-10T12:14:43Z"
+		},
+		{
+			"checksumSHA1": "I87tkF1e/hrl4d/XIKFfkPRq1ww=",
+			"path": "github.com/prometheus/client_golang/prometheus",
+			"revision": "f504d69affe11ec1ccb2e5948127f86878c9fd57",
+			"revisionTime": "2018-03-28T13:04:30Z"
+		},
+		{
+			"checksumSHA1": "DvwvOlPNAgRntBzt3b3OSRMS2N4=",
+			"path": "github.com/prometheus/client_model/go",
+			"revision": "99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c",
+			"revisionTime": "2017-11-17T10:05:41Z"
+		},
+		{
+			"checksumSHA1": "+wZ+Pa6NX+NOxUvayXBXGOcqFe8=",
+			"path": "github.com/prometheus/common/expfmt",
+			"revision": "38c53a9f4bfcd932d1b00bfc65e256a7fba6b37a",
+			"revisionTime": "2018-03-26T16:04:09Z"
+		},
+		{
+			"checksumSHA1": "GWlM3d2vPYyNATtTFgftS10/A9w=",
+			"path": "github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg",
+			"revision": "38c53a9f4bfcd932d1b00bfc65e256a7fba6b37a",
+			"revisionTime": "2018-03-26T16:04:09Z"
+		},
+		{
+			"checksumSHA1": "YU+/K48IMawQnToO4ETE6a+hhj4=",
+			"path": "github.com/prometheus/common/model",
+			"revision": "38c53a9f4bfcd932d1b00bfc65e256a7fba6b37a",
+			"revisionTime": "2018-03-26T16:04:09Z"
+		},
+		{
+			"checksumSHA1": "Etvt6mgzvD7ARf4Ux03LHfgSlzU=",
+			"path": "github.com/prometheus/procfs",
+			"revision": "780932d4fbbe0e69b84c34c20f5c8d0981e109ea",
+			"revisionTime": "2018-03-21T23:08:12Z"
+		},
+		{
+			"checksumSHA1": "lv9rIcjbVEGo8AT1UCUZXhXrfQc=",
+			"path": "github.com/prometheus/procfs/internal/util",
+			"revision": "780932d4fbbe0e69b84c34c20f5c8d0981e109ea",
+			"revisionTime": "2018-03-21T23:08:12Z"
+		},
+		{
+			"checksumSHA1": "HSP5hVT0CNMRa8+Xtz4z2Ic5U0E=",
+			"path": "github.com/prometheus/procfs/nfs",
+			"revision": "780932d4fbbe0e69b84c34c20f5c8d0981e109ea",
+			"revisionTime": "2018-03-21T23:08:12Z"
+		},
+		{
+			"checksumSHA1": "yItvTQLUVqm/ArLEbvEhqG0T5a0=",
+			"path": "github.com/prometheus/procfs/xfs",
+			"revision": "780932d4fbbe0e69b84c34c20f5c8d0981e109ea",
+			"revisionTime": "2018-03-21T23:08:12Z"
+		}
+	],
+	"rootPath": "github.com/mdlayher/apcupsd_exporter"
+}
