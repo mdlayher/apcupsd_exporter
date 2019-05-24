@@ -2,6 +2,7 @@ package apcupsdexporter
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/mdlayher/apcupsd"
@@ -32,6 +33,7 @@ type UPSCollector struct {
 	LastTransferOffBattery              *prometheus.Desc
 	LastSelftest                        *prometheus.Desc
 	NominalPowerWatts                   *prometheus.Desc
+	UPSStatus                           *prometheus.Desc
 
 	ss StatusSource
 }
@@ -143,6 +145,13 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 			nil,
 		),
 
+		UPSStatus: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "ups_status"),
+			"Status of the UPS.",
+			append(labels, "status"),
+			nil,
+		),
+
 		ss: ss,
 	}
 }
@@ -159,6 +168,22 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		s.Hostname,
 		s.UPSName,
 		s.Model,
+	}
+
+	upsStatus := []string{
+		"CAL",
+		"TRIM",
+		"BOOST",
+		"ONLINE",
+		"ONBATT",
+		"OVERLOAD",
+		"LOWBATT",
+		"REPLACEBATT",
+		"NOBATT",
+		"SLAVE",
+		"SLAVEDOWN",
+		"COMMLOST",
+		"SHUTTING DOWN",
 	}
 
 	ch <- prometheus.MustNewConstMetric(
@@ -259,6 +284,20 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		labels...,
 	)
 
+	for _, status := range upsStatus {
+		value := float64(0)
+		if strings.Contains(s.Status, status) {
+			value = float64(1)
+		}
+		labelsWithStatus := append(labels, status)
+		ch <- prometheus.MustNewConstMetric(
+			c.UPSStatus,
+			prometheus.GaugeValue,
+			value,
+			labelsWithStatus...,
+		)
+	}
+
 	return nil, nil
 }
 
@@ -292,6 +331,7 @@ func (c *UPSCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.BatteryTimeLeftSeconds,
 		c.BatteryTimeOnSeconds,
 		c.BatteryCumulativeTimeOnSecondsTotal,
+		c.UPSStatus,
 	}
 
 	for _, d := range ds {
