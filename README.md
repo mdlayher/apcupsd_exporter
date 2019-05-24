@@ -26,7 +26,7 @@ Usage of ./apcupsd_exporter:
 Sample
 ------
 
-Here is a screenshot of an example grafana dashboard using metrics from
-`apcupsd_exporter`.
+Here is a screenshot of an example grafana dashboard using metrics from `apcupsd_exporter`.
+You can find the dashboard JSON in the `grafana` folder.
+![sample](https://raw.githubusercontent.com/jangrewe/apcupsd_exporter/master/grafana/screenshot.png)
 
-![sample](https://cloud.githubusercontent.com/assets/1926905/18330011/55c49eca-7524-11e6-8152-717bf4bc75c0.png)
