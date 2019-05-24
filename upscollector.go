@@ -148,14 +148,14 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 
 		UPSStatus: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "ups_status"),
-			"Status of the UPS.",
+			"UPS Status values.",
 			[]string{"status"},
 			nil,
 		),
 
 		UPSInfo: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "ups_info"),
-			"Info of the UPS.",
+			"Hostname, UPS Model and Name.",
 			infoLabels,
 			nil,
 		),
@@ -332,6 +332,7 @@ func (c *UPSCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.BatteryTimeOnSeconds,
 		c.BatteryCumulativeTimeOnSecondsTotal,
 		c.UPSStatus,
+		c.UPSInfo,
 	}
 
 	for _, d := range ds {
