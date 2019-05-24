@@ -34,6 +34,7 @@ type UPSCollector struct {
 	LastSelftest                        *prometheus.Desc
 	NominalPowerWatts                   *prometheus.Desc
 	UPSStatus                           *prometheus.Desc
+	UPSInfo                             *prometheus.Desc
 
 	ss StatusSource
 }
@@ -43,112 +44,119 @@ var _ prometheus.Collector = &UPSCollector{}
 // NewUPSCollector creates a new UPSCollector.
 func NewUPSCollector(ss StatusSource) *UPSCollector {
 	var (
-		labels = []string{"hostname", "ups_name", "model"}
+		infoLabels = []string{"hostname", "ups_name", "model"}
 	)
 
 	return &UPSCollector{
 		UPSLoadPercent: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "ups_load_percent"),
 			"Current UPS load percentage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryChargePercent: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_charge_percent"),
 			"Current UPS battery charge percentage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		LineVolts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "line_volts"),
 			"Current AC input line voltage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		LineNominalVolts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "line_nominal_volts"),
 			"Nominal AC input line voltage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryVolts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_volts"),
 			"Current UPS battery voltage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryNominalVolts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_nominal_volts"),
 			"Nominal UPS battery voltage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryNumberTransfersTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_number_transfers_total"),
 			"Total number of transfers to UPS battery power.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryTimeLeftSeconds: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_time_left_seconds"),
 			"Number of seconds remaining of UPS battery power.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryTimeOnSeconds: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_time_on_seconds"),
 			"Number of seconds the UPS has been providing battery power due to an AC input line outage.",
-			labels,
+			nil,
 			nil,
 		),
 
 		BatteryCumulativeTimeOnSecondsTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "battery_cumulative_time_on_seconds_total"),
 			"Total number of seconds the UPS has provided battery power due to AC input line outages.",
-			labels,
+			nil,
 			nil,
 		),
 
 		LastTransferOnBattery: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_on_battery"),
 			"Time of last transfer to battery since apcupsd startup.",
-			labels,
+			nil,
 			nil,
 		),
 
 		LastTransferOffBattery: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_off_battery"),
 			"Time of last transfer from battery since apcupsd startup.",
-			labels,
+			nil,
 			nil,
 		),
 
 		LastSelftest: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_last_selftest"),
 			"Time of last selftest since apcupsd startup.",
-			labels,
+			nil,
 			nil,
 		),
 
 		NominalPowerWatts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "apcupsd_nominal_power_watts"),
 			"Nominal power output in watts.",
-			labels,
+			nil,
 			nil,
 		),
 
 		UPSStatus: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "ups_status"),
 			"Status of the UPS.",
-			append(labels, "status"),
+			[]string{"status"},
+			nil,
+		),
+
+		UPSInfo: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "ups_info"),
+			"Info of the UPS.",
+			infoLabels,
 			nil,
 		),
 
@@ -164,7 +172,7 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		return c.BatteryVolts, err
 	}
 
-	labels := []string{
+	infoLabels := []string{
 		s.Hostname,
 		s.UPSName,
 		s.Model,
@@ -190,98 +198,84 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		c.UPSLoadPercent,
 		prometheus.GaugeValue,
 		s.LoadPercent,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryChargePercent,
 		prometheus.GaugeValue,
 		s.BatteryChargePercent,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.LineVolts,
 		prometheus.GaugeValue,
 		s.LineVoltage,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.LineNominalVolts,
 		prometheus.GaugeValue,
 		s.NominalInputVoltage,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryVolts,
 		prometheus.GaugeValue,
 		s.BatteryVoltage,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryNominalVolts,
 		prometheus.GaugeValue,
 		s.NominalBatteryVoltage,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryNumberTransfersTotal,
 		prometheus.CounterValue,
 		float64(s.NumberTransfers),
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryTimeLeftSeconds,
 		prometheus.GaugeValue,
 		s.TimeLeft.Seconds(),
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryTimeOnSeconds,
 		prometheus.GaugeValue,
 		s.TimeOnBattery.Seconds(),
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.BatteryCumulativeTimeOnSecondsTotal,
 		prometheus.CounterValue,
 		s.CumulativeTimeOnBattery.Seconds(),
-		labels...,
 	)
 
 	collectTimestamp(
 		ch,
 		c.LastTransferOnBattery,
 		s.XOnBattery,
-		labels...,
 	)
 
 	collectTimestamp(
 		ch,
 		c.LastTransferOffBattery,
 		s.XOffBattery,
-		labels...,
 	)
 
 	collectTimestamp(
 		ch,
 		c.LastSelftest,
 		s.LastSelftest,
-		labels...,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
 		c.NominalPowerWatts,
 		prometheus.GaugeValue,
 		float64(s.NominalPower),
-		labels...,
 	)
 
 	for _, status := range upsStatus {
@@ -289,14 +283,20 @@ func (c *UPSCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, e
 		if strings.Contains(s.Status, status) {
 			value = float64(1)
 		}
-		labelsWithStatus := append(labels, status)
 		ch <- prometheus.MustNewConstMetric(
 			c.UPSStatus,
 			prometheus.GaugeValue,
 			value,
-			labelsWithStatus...,
+			status,
 		)
 	}
+
+	ch <- prometheus.MustNewConstMetric(
+		c.UPSInfo,
+		prometheus.GaugeValue,
+		float64(1),
+		infoLabels...,
+	)
 
 	return nil, nil
 }

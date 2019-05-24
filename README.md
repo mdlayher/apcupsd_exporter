@@ -23,10 +23,12 @@ Usage of ./apcupsd_exporter:
         URL path for surfacing collected metrics (default "/metrics")
 ```
 
-Sample
-------
+Dashboard
+---------
 
 Here is a screenshot of an example grafana dashboard using metrics from `apcupsd_exporter`.
+
 You can find the dashboard JSON in the `grafana` folder.
+
 ![sample](https://raw.githubusercontent.com/jangrewe/apcupsd_exporter/master/grafana/screenshot.png)
 
