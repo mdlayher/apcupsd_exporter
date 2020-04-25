@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func testCollector(t *testing.T, collector prometheus.Collector) []byte {
@@ -15,7 +16,7 @@ func testCollector(t *testing.T, collector prometheus.Collector) []byte {
 	}
 	defer prometheus.Unregister(collector)
 
-	promServer := httptest.NewServer(prometheus.Handler())
+	promServer := httptest.NewServer(promhttp.Handler())
 	defer promServer.Close()
 
 	resp, err := http.Get(promServer.URL)
