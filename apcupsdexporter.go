@@ -4,12 +4,15 @@ package apcupsdexporter
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/mdlayher/apcupsd"
 	"github.com/prometheus/client_golang/prometheus"
 )
+
+// TODO(mdlayher): rework this with metricslite.
 
 const (
 	// namespace is the top-level namespace for this apcupsd exporter.
@@ -44,7 +47,8 @@ func New(fn ClientFunc) *Exporter {
 // Describe sends all the descriptors of the collectors included to
 // the provided channel.
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	e.withCollectors(func(cs []prometheus.Collector) {
+	// Don't care, we'll get this error on Collect.
+	_ = e.withCollectors(func(cs []prometheus.Collector) {
 		for _, c := range cs {
 			c.Describe(ch)
 		}
@@ -54,24 +58,30 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 // Collect sends the collected metrics from each of the collectors to
 // prometheus.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-	e.withCollectors(func(cs []prometheus.Collector) {
+	err := e.withCollectors(func(cs []prometheus.Collector) {
 		for _, c := range cs {
 			c.Collect(ch)
 		}
 	})
+	// This is a hack but it allows us to report failure to dial without
+	// reworking significant portions of the code.
+	if err != nil {
+		log.Println(err)
+		ch <- prometheus.NewInvalidMetric(NewUPSCollector(nil).Info, err)
+		return
+	}
 }
 
 // withCollectors sets up an apcupsd client and creates a set of prometheus
 // collectors.  It invokes the input closure and then cleans up after the
 // closure returns.
-func (e *Exporter) withCollectors(fn func(cs []prometheus.Collector)) {
+func (e *Exporter) withCollectors(fn func(cs []prometheus.Collector)) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	c, err := e.clientFn(ctx)
 	if err != nil {
-		log.Printf("error creating apcupsd client: %v", err)
-		return
+		return fmt.Errorf("error creating apcupsd client: %v", err)
 	}
 	defer c.Close()
 
@@ -80,4 +90,6 @@ func (e *Exporter) withCollectors(fn func(cs []prometheus.Collector)) {
 	}
 
 	fn(cs)
+
+	return nil
 }
