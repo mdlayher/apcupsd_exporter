@@ -5,23 +5,25 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func testCollector(t *testing.T, collector prometheus.Collector) []byte {
-	if err := prometheus.Register(collector); err != nil {
-		t.Fatalf("failed to register Prometheus collector: %v", err)
-	}
-	defer prometheus.Unregister(collector)
+	t.Helper()
 
-	promServer := httptest.NewServer(promhttp.Handler())
-	defer promServer.Close()
+	reg := prometheus.NewPedanticRegistry()
+	reg.MustRegister(collector)
 
-	resp, err := http.Get(promServer.URL)
+	srv := httptest.NewServer(promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
+	defer srv.Close()
+
+	c := &http.Client{Timeout: 1 * time.Second}
+	resp, err := c.Get(srv.URL)
 	if err != nil {
-		t.Fatalf("failed to GET data from prometheus: %v", err)
+		t.Fatalf("failed to HTTP GET data from prometheus: %v", err)
 	}
 	defer resp.Body.Close()
 

@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
@@ -44,8 +45,8 @@ func main() {
 	}
 }
 
-func newClient(network string, addr string) apcupsdexporter.ClientFunc {
-	return func() (*apcupsd.Client, error) {
-		return apcupsd.Dial(network, addr)
+func newClient(network, addr string) apcupsdexporter.ClientFunc {
+	return func(ctx context.Context) (*apcupsd.Client, error) {
+		return apcupsd.DialContext(ctx, network, addr)
 	}
 }

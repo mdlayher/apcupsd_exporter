@@ -30,9 +30,9 @@ type UPSCollector struct {
 	BatteryTimeLeftSeconds              *prometheus.Desc
 	BatteryTimeOnSeconds                *prometheus.Desc
 	BatteryCumulativeTimeOnSecondsTotal *prometheus.Desc
-	LastTransferOnBattery               *prometheus.Desc
-	LastTransferOffBattery              *prometheus.Desc
-	LastSelftest                        *prometheus.Desc
+	LastTransferOnBatteryTimeSeconds    *prometheus.Desc
+	LastTransferOffBatteryTimeSeconds   *prometheus.Desc
+	LastSelftestTimeSeconds             *prometheus.Desc
 	NominalPowerWatts                   *prometheus.Desc
 
 	ss StatusSource
@@ -122,29 +122,29 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 			nil,
 		),
 
-		LastTransferOnBattery: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_on_battery"),
-			"Time of last transfer to battery since apcupsd startup.",
+		LastTransferOnBatteryTimeSeconds: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "last_transfer_on_battery_time_seconds"),
+			"UNIX timestamp of last transfer to battery since apcupsd startup.",
 			labels,
 			nil,
 		),
 
-		LastTransferOffBattery: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, "", "apcupsd_last_transfer_off_battery"),
-			"Time of last transfer from battery since apcupsd startup.",
+		LastTransferOffBatteryTimeSeconds: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "last_transfer_off_battery_time_seconds"),
+			"UNIX timestamp of last transfer from battery since apcupsd startup.",
 			labels,
 			nil,
 		),
 
-		LastSelftest: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, "", "apcupsd_last_selftest"),
-			"Time of last selftest since apcupsd startup.",
+		LastSelftestTimeSeconds: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "last_selftest_time_seconds"),
+			"UNIX timestamp of last selftest since apcupsd startup.",
 			labels,
 			nil,
 		),
 
 		NominalPowerWatts: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, "", "apcupsd_nominal_power_watts"),
+			prometheus.BuildFQName(namespace, "", "nominal_power_watts"),
 			"Nominal power output in watts.",
 			labels,
 			nil,
@@ -169,6 +169,10 @@ func (c *UPSCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.BatteryTimeLeftSeconds,
 		c.BatteryTimeOnSeconds,
 		c.BatteryCumulativeTimeOnSecondsTotal,
+		c.LastTransferOnBatteryTimeSeconds,
+		c.LastTransferOffBatteryTimeSeconds,
+		c.LastSelftestTimeSeconds,
+		c.NominalPowerWatts,
 	}
 
 	for _, d := range ds {
@@ -264,21 +268,21 @@ func (c *UPSCollector) Collect(ch chan<- prometheus.Metric) {
 	)
 
 	ch <- prometheus.MustNewConstMetric(
-		c.LastTransferOnBattery,
+		c.LastTransferOnBatteryTimeSeconds,
 		prometheus.GaugeValue,
 		timestamp(s.XOnBattery),
 		s.UPSName,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
-		c.LastTransferOffBattery,
+		c.LastTransferOffBatteryTimeSeconds,
 		prometheus.GaugeValue,
 		timestamp(s.XOffBattery),
 		s.UPSName,
 	)
 
 	ch <- prometheus.MustNewConstMetric(
-		c.LastSelftest,
+		c.LastSelftestTimeSeconds,
 		prometheus.GaugeValue,
 		timestamp(s.LastSelftest),
 		s.UPSName,

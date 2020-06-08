@@ -1,12 +1,10 @@
-apcupsd_exporter [![Build Status](https://travis-ci.org/mdlayher/apcupsd_exporter.svg?branch=master)](https://travis-ci.org/mdlayher/apcupsd_exporter) [![GoDoc](http://godoc.org/github.com/mdlayher/apcupsd_exporter?status.svg)](http://godoc.org/github.com/mdlayher/apcupsd_exporter)
-================
+# apcupsd_exporter [![Linux Test Status](https://github.com/mdlayher/apcupsd_exporter/workflows/Linux%20Test/badge.svg)](https://github.com/mdlayher/apcupsd_exporter/actions)  [![GoDoc](http://godoc.org/github.com/mdlayher/apcupsd_exporter?status.svg)](http://godoc.org/github.com/mdlayher/apcupsd_exporter)
 
 Command `apcupsd_exporter` provides a Prometheus exporter for the
-[apcupsd](http://www.apcupsd.org/) Network Information Server (NIS).
-MIT Licensed.
+[apcupsd](http://www.apcupsd.org/) Network Information Server (NIS). MIT
+Licensed.
 
-Usage
------
+## Usage
 
 Available flags for `apcupsd_exporter` include:
 
@@ -22,11 +20,3 @@ Usage of ./apcupsd_exporter:
   -telemetry.path string
         URL path for surfacing collected metrics (default "/metrics")
 ```
-
-Sample
-------
-
-Here is a screenshot of an example grafana dashboard using metrics from
-`apcupsd_exporter`.
-
-![sample](https://cloud.githubusercontent.com/assets/1926905/18330011/55c49eca-7524-11e6-8152-717bf4bc75c0.png)

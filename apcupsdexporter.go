@@ -3,7 +3,9 @@
 package apcupsdexporter
 
 import (
+	"context"
 	"log"
+	"time"
 
 	"github.com/mdlayher/apcupsd"
 	"github.com/prometheus/client_golang/prometheus"
@@ -29,7 +31,7 @@ var _ prometheus.Collector = &Exporter{}
 // A ClientFunc is a function which can return an apcupsd NIS client.
 // ClientFuncs are invoked on each Prometheus scrape, so that connections
 // can be short-lived and less likely to time out or fail.
-type ClientFunc func() (*apcupsd.Client, error)
+type ClientFunc func(ctx context.Context) (*apcupsd.Client, error)
 
 // New creates a new Exporter which collects metrics by creating a apcupsd
 // client using the input ClientFunc.
@@ -63,17 +65,19 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 // collectors.  It invokes the input closure and then cleans up after the
 // closure returns.
 func (e *Exporter) withCollectors(fn func(cs []prometheus.Collector)) {
-	c, err := e.clientFn()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	c, err := e.clientFn(ctx)
 	if err != nil {
-		log.Printf("[ERROR] error creating apcupsd client: %v", err)
+		log.Printf("error creating apcupsd client: %v", err)
 		return
 	}
+	defer c.Close()
 
 	cs := []prometheus.Collector{
 		NewUPSCollector(c),
 	}
 
 	fn(cs)
-
-	_ = c.Close()
 }
