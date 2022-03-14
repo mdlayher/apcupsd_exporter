@@ -9,7 +9,7 @@ import (
 )
 
 func TestUPSCollector(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		desc    string
 		ss      *testStatusSource
 		matches []*regexp.Regexp
@@ -63,7 +63,7 @@ func TestUPSCollector(t *testing.T) {
 				regexp.MustCompile(`apcupsd_last_transfer_off_battery_time_seconds{ups="bar"} 100002`),
 				regexp.MustCompile(`apcupsd_last_selftest_time_seconds{ups="bar"} 100003`),
 				regexp.MustCompile(`apcupsd_nominal_power_watts{ups="bar"} 50`),
-				regexp.MustCompile(`apcupsd_internal_temp{ups="bar"} 26.4`),
+				regexp.MustCompile(`apcupsd_internal_temperature_celsius{ups="bar"} 26.4`),
 			},
 		},
 	}

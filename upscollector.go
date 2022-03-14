@@ -35,7 +35,7 @@ type UPSCollector struct {
 	LastTransferOffBatteryTimeSeconds   *prometheus.Desc
 	LastSelftestTimeSeconds             *prometheus.Desc
 	NominalPowerWatts                   *prometheus.Desc
-	InternalTemp                        *prometheus.Desc
+	InternalTemperatureCelsius          *prometheus.Desc
 
 	ss StatusSource
 }
@@ -159,8 +159,8 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 			nil,
 		),
 
-		InternalTemp: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, "", "internal_temp"),
+		InternalTemperatureCelsius: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "internal_temperature_celsius"),
 			"Internal temperature in °C.",
 			labels,
 			nil,
@@ -190,7 +190,7 @@ func (c *UPSCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.LastTransferOffBatteryTimeSeconds,
 		c.LastSelftestTimeSeconds,
 		c.NominalPowerWatts,
-		c.InternalTemp,
+		c.InternalTemperatureCelsius,
 	}
 
 	for _, d := range ds {
@@ -321,7 +321,7 @@ func (c *UPSCollector) Collect(ch chan<- prometheus.Metric) {
 	)
 
 	ch <- prometheus.MustNewConstMetric(
-		c.InternalTemp,
+		c.InternalTemperatureCelsius,
 		prometheus.GaugeValue,
 		s.InternalTemp,
 		s.UPSName,
