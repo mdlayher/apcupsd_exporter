@@ -50,7 +50,7 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 		Info: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "info"),
 			"Metadata about a given UPS.",
-			[]string{"ups", "hostname", "model"},
+			[]string{"ups", "hostname", "model", "status"},
 			nil,
 		),
 
@@ -212,7 +212,7 @@ func (c *UPSCollector) Collect(ch chan<- prometheus.Metric) {
 		c.Info,
 		prometheus.GaugeValue,
 		1,
-		s.UPSName, s.Hostname, s.Model,
+		s.UPSName, s.Hostname, s.Model, s.Status,
 	)
 
 	ch <- prometheus.MustNewConstMetric(

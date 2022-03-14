@@ -27,6 +27,7 @@ func TestUPSCollector(t *testing.T) {
 					Hostname: "foo",
 					Model:    "APC UPS",
 					UPSName:  "bar",
+					Status:   "ONLINE",
 
 					BatteryChargePercent:    100.0,
 					CumulativeTimeOnBattery: 30 * time.Second,
@@ -54,7 +55,7 @@ func TestUPSCollector(t *testing.T) {
 				regexp.MustCompile(`apcupsd_battery_time_on_seconds{ups="bar"} 10`),
 				regexp.MustCompile(`apcupsd_battery_volts{ups="bar"} 13.2`),
 				regexp.MustCompile(`apcupsd_battery_number_transfers_total{ups="bar"} 1`),
-				regexp.MustCompile(`apcupsd_info{hostname="foo",model="APC UPS",ups="bar"} 1`),
+				regexp.MustCompile(`apcupsd_info{hostname="foo",model="APC UPS",status="ONLINE",ups="bar"} 1`),
 				regexp.MustCompile(`apcupsd_line_nominal_volts{ups="bar"} 120`),
 				regexp.MustCompile(`apcupsd_line_volts{ups="bar"} 121.1`),
 				regexp.MustCompile(`apcupsd_output_volts{ups="bar"} 120.9`),
