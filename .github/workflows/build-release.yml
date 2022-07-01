@@ -1,0 +1,38 @@
+# See: https://github.com/wangyoucao577/go-release-action
+# See: https://github.com/marketplace/actions/go-release-binaries
+##
+on:
+  release:
+    types: [created]
+
+  # See: https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
+  workflow_dispatch:
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, linux/arm, darwin/amd64, darwin/arm64
+        ##
+        #  GOOS=linux GOARCH=arm
+        goos: [linux, darwin]
+        goarch: ["386", amd64, arm64, arm]
+        exclude:
+          # No 32 bit intel or ARM builds for macOS platforms
+          - goarch: "386"
+            goos: darwin
+          - goarch: "arm"
+            goos: darwin
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.29
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: 1.17
+          # Publish sha hashes, not md5
+          md5sum: false
+          sha256sum: true
