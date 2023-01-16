@@ -1,7 +1,7 @@
 package apcupsdexporter
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +27,7 @@ func testCollector(t *testing.T, collector prometheus.Collector) []byte {
 	}
 	defer resp.Body.Close()
 
-	buf, err := ioutil.ReadAll(resp.Body)
+	buf, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("failed to read server response: %v", err)
 	}

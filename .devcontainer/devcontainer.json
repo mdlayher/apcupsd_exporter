@@ -1,0 +1,12 @@
+{
+    "name": "apcupsd-exporter",
+    "image": "golang:1.19",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go"
+            ]
+        }
+    },
+    "postCreateCommand": "go install honnef.co/go/tools/cmd/staticcheck@latest"
+}

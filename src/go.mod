@@ -1,6 +1,6 @@
 module github.com/mdlayher/apcupsd_exporter
 
-go 1.17
+go 1.19
 
 require (
 	github.com/mdlayher/apcupsd v0.0.0-20220314153302-72ccd80310d1
