@@ -1,28 +1,11 @@
-# apcupsd_exporter [![Linux Test Status](https://github.com/bossm8/apcupsd_exporter/workflows/Linux%20Test/badge.svg)](https://github.com/bossm8/apcupsd_exporter/actions)  [![GoDoc](http://godoc.org/github.com/mdlayher/apcupsd_exporter?status.svg)](http://godoc.org/github.com/mdlayher/apcupsd_exporter)
+# apcupsd_exporter [![Linux Test Status](https://github.com/mdlayher/apcupsd_exporter/workflows/Linux%20Test/badge.svg)](https://github.com/mdlayher/apcupsd_exporter/actions)  [![GoDoc](http://godoc.org/github.com/mdlayher/apcupsd_exporter?status.svg)](http://godoc.org/github.com/mdlayher/apcupsd_exporter)
 
-## Notes
-
-This is a fork of the original repository from [mdlayher](https://github.com/mdlayher/apcupsd_exporter) with an added docker built.
-
-## Docker Usage
-
-Per default the docker container runs `--help` start the apcupsd_exporter like this (e.g.)
-
-```bash
-docker run \
-      -it --rm -p 9162:9162 \
-      --add-host host.docker.internal:host-gateway \
-      ghcr.io/bossm8/apcupsd-exporter:latest -apcupsd.addr host.docker.internal:3551 
-```
-
-
-## Original README
 
 Command `apcupsd_exporter` provides a Prometheus exporter for the
 [apcupsd](http://www.apcupsd.org/) Network Information Server (NIS). MIT
 Licensed.
 
-### Usage
+## Usage
 
 Available flags for `apcupsd_exporter` include:
 
@@ -37,4 +20,15 @@ Usage of ./apcupsd_exporter:
         address for apcupsd exporter (default ":9162")
   -telemetry.path string
         URL path for surfacing collected metrics (default "/metrics")
+```
+
+## Docker Usage
+
+Per default the docker container runs `--help` start the apcupsd_exporter like this (e.g.)
+
+```bash
+docker run \
+      -it --rm -p 9162:9162 \
+      --add-host host.docker.internal:host-gateway \
+      ghcr.io/mdlayher/apcupsd-exporter:latest -apcupsd.addr host.docker.internal:3551 
 ```
