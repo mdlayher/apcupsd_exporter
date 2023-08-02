@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/mdlayher/apcupsd"
+	"github.com/Supporterino/apcupsd"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -25,6 +25,7 @@ type UPSCollector struct {
 	LineVolts                           *prometheus.Desc
 	LineNominalVolts                    *prometheus.Desc
 	OutputVolts                         *prometheus.Desc
+	OutputAmps                          *prometheus.Desc
 	BatteryVolts                        *prometheus.Desc
 	BatteryNominalVolts                 *prometheus.Desc
 	BatteryNumberTransfersTotal         *prometheus.Desc
@@ -85,6 +86,13 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 		OutputVolts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "output_volts"),
 			"Current AC output voltage.",
+			labels,
+			nil,
+		),
+
+		OutputAmps: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "output_amps"),
+			"Current ampere draw on output.",
 			labels,
 			nil,
 		),
@@ -180,6 +188,7 @@ func (c *UPSCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.LineVolts,
 		c.LineNominalVolts,
 		c.OutputVolts,
+		c.OutputAmps,
 		c.BatteryVolts,
 		c.BatteryNominalVolts,
 		c.BatteryNumberTransfersTotal,
@@ -247,6 +256,13 @@ func (c *UPSCollector) Collect(ch chan<- prometheus.Metric) {
 		c.OutputVolts,
 		prometheus.GaugeValue,
 		s.OutputVoltage,
+		s.UPSName,
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		c.OutputAmps,
+		prometheus.GaugeValue,
+		s.OutputAmps,
 		s.UPSName,
 	)
 
