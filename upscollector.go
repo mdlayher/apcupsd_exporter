@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/mdlayher/apcupsd"
+	"github.com/Supporterino/apcupsd"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
