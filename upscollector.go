@@ -92,7 +92,7 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 
 		OutputAmps: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "output_amps"),
-			"Current ampere draw on output.",
+			"Current AC output amperage.",
 			labels,
 			nil,
 		),
