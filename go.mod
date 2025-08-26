@@ -3,7 +3,7 @@ module github.com/mdlayher/apcupsd_exporter
 go 1.17
 
 require (
-	github.com/mdlayher/apcupsd v0.0.0-20220314153302-72ccd80310d1
+	github.com/mdlayher/apcupsd v0.0.0-20230802135538-48f5030bcd58
 	github.com/prometheus/client_golang v1.12.1
 )
 
