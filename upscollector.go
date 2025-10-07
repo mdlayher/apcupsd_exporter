@@ -35,6 +35,7 @@ type UPSCollector struct {
 	LastTransferOnBatteryTimeSeconds    *prometheus.Desc
 	LastTransferOffBatteryTimeSeconds   *prometheus.Desc
 	LastSelftestTimeSeconds             *prometheus.Desc
+	LastTransferOnBatteryReason         *prometheus.Desc
 	NominalPowerWatts                   *prometheus.Desc
 	InternalTemperatureCelsius          *prometheus.Desc
 
@@ -160,6 +161,13 @@ func NewUPSCollector(ss StatusSource) *UPSCollector {
 			nil,
 		),
 
+		LastTransferOnBatteryReason: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "last_transfer_on_battery_reason"),
+			"Reason for last transfer to battery.",
+			[]string{"reason", "ups"},
+			nil,
+		),
+
 		NominalPowerWatts: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "nominal_power_watts"),
 			"Nominal power output in watts.",
@@ -198,6 +206,7 @@ func (c *UPSCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.LastTransferOnBatteryTimeSeconds,
 		c.LastTransferOffBatteryTimeSeconds,
 		c.LastSelftestTimeSeconds,
+		c.LastTransferOnBatteryReason,
 		c.NominalPowerWatts,
 		c.InternalTemperatureCelsius,
 	}
@@ -326,6 +335,14 @@ func (c *UPSCollector) Collect(ch chan<- prometheus.Metric) {
 		c.LastSelftestTimeSeconds,
 		prometheus.GaugeValue,
 		timestamp(s.LastSelftest),
+		s.UPSName,
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		c.LastTransferOnBatteryReason,
+		prometheus.GaugeValue,
+		1,
+		s.LastTransfer,
 		s.UPSName,
 	)
 
