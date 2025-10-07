@@ -4,6 +4,18 @@ Command `apcupsd_exporter` provides a Prometheus exporter for the
 [apcupsd](http://www.apcupsd.org/) Network Information Server (NIS). MIT
 Licensed.
 
+## Installation
+
+Make sure that Go package is installed to build this package
+```
+sudo apt install golang
+```
+
+Move to `cmd/apcupsd_exporter` to build the file. 
+```go build```
+
+Test by running command `./apcupsd_exporter`
+
 ## Usage
 
 Available flags for `apcupsd_exporter` include:
