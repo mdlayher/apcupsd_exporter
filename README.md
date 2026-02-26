@@ -20,3 +20,13 @@ Usage of ./apcupsd_exporter:
   -telemetry.path string
         URL path for surfacing collected metrics (default "/metrics")
 ```
+Usage of environment variables are also Available
+
+### Environment Variables
+
+| Variable Name | Default Value |
+|----------------|----------------|
+| APCUPSD_ADDRESS | :3551 |
+| APCUPSD_NETWORK | tcp |
+| TELEMETRY_ADDRESS | :9162 |
+| TELEMETRY_PATH | /metrics |

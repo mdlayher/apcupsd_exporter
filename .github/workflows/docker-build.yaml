@@ -1,0 +1,51 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: [1.26]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    container:
+      image: golang:1.26-alpine
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Go build
+        run: go build ./...
+
+  docker-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: [1.26]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    container:
+      image: golang:1.26-alpine
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: apk add --no-cache docker-cli
+
+      - name: Build Docker image
+        run: docker build -t yourrenter-backend .
